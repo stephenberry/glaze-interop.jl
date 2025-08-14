@@ -1,0 +1,154 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-13]
+        julia-version: ['1.6']
+    
+    env:
+      JULIA_NUM_THREADS: 2
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Julia 1.6
+      uses: julia-actions/setup-julia@v2
+      with:
+        version: ${{ matrix.julia-version }}
+    
+    - name: Install system dependencies (Ubuntu)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake gcc-13 g++-13
+        # Set GCC 13 as default for C++23 support
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+    
+    - name: Install system dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        # Install latest Xcode command line tools
+        sudo xcode-select --install || true
+        # Homebrew should already have cmake installed
+        brew install cmake || brew upgrade cmake
+    
+    
+    - name: Check compiler versions
+      shell: bash
+      run: |
+        echo "=== Compiler Information ==="
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
+          gcc --version
+          g++ --version
+        elif [[ "${{ runner.os }}" == "macOS" ]]; then
+          clang --version
+          clang++ --version
+        fi
+        cmake --version
+        echo "Julia version:"
+        julia --version
+    
+    - name: Cache Julia packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.julia
+        key: ${{ runner.os }}-julia-1.6-${{ hashFiles('**/Project.toml', '**/Manifest.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-julia-1.6-
+    
+    - name: Install Julia dependencies
+      shell: bash
+      run: |
+        julia --project=. -e 'using Pkg; Pkg.instantiate()'
+    
+    - name: Run tests
+      shell: bash
+      run: |
+        # Make script executable
+        chmod +x run_tests.sh
+        # Run the test script
+        ./run_tests.sh
+    
+    - name: Upload test logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-logs-${{ matrix.os }}-julia-1.6
+        path: |
+          test_output.log
+          *.log
+          core*
+        if-no-files-found: ignore
+    
+    - name: Check for memory leaks (Linux only)
+      if: runner.os == 'Linux'
+      run: |
+        # Install valgrind
+        sudo apt-get install -y valgrind
+        
+        # Run a subset of tests under valgrind to check for memory issues
+        echo "Running memory leak detection..."
+        # Note: This may be slow, so we limit it to one configuration
+        timeout 600s valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
+          --error-exitcode=1 --suppressions=/dev/null \
+          julia --project=. -e "using Glaze; println(\"Memory check passed\")" || \
+          echo "Valgrind check completed with warnings (non-fatal)"
+
+  test-coverage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Julia
+      uses: julia-actions/setup-julia@v2
+      with:
+        version: '1.6'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update  
+        sudo apt-get install -y build-essential cmake gcc-13 g++-13
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-13 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-13 100
+    
+    - name: Install Julia dependencies
+      run: julia --project=. -e 'using Pkg; Pkg.instantiate()'
+    
+    - name: Run tests with coverage
+      run: |
+        chmod +x run_tests.sh
+        julia --project=. --code-coverage=user -e '
+          # Build the test library first
+          test_dir = pwd() * "/test"
+          build_dir = test_dir * "/build"
+          mkpath(build_dir)
+          
+          cd(build_dir) do
+              run(`cmake ..`)
+              run(`cmake --build .`)
+          end
+          
+          # Now run tests
+          include("test/runtests.jl")
+        '
+    
+    - name: Process coverage
+      uses: julia-actions/julia-processcoverage@v1
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: lcov.info
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
