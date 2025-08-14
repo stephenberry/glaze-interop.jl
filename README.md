@@ -1,7 +1,7 @@
 # Glaze (C++) Julia Interop
 
 [![CI](https://github.com/stephenberry/glaze-interop.jl/workflows/CI/badge.svg)](https://github.com/stephenberry/glaze-interop.jl/actions/workflows/ci.yml)
-[![Julia](https://img.shields.io/badge/julia-%3E%3D%201.6-blue.svg)](https://julialang.org/)
+[![Julia](https://img.shields.io/badge/julia-1.11-blue.svg)](https://julialang.org/)
 [![C++](https://img.shields.io/badge/C%2B%2B-23-brightgreen.svg)](https://en.cppreference.com/w/cpp/23)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 

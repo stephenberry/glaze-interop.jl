@@ -67,8 +67,8 @@ When adding new features:
 
 The project uses GitHub Actions for CI/CD:
 
-- **Multiple platforms**: Ubuntu, macOS
-- **Julia version**: 1.6
+- **Multiple platforms**: Ubuntu, macOS (Apple Silicon)
+- **Julia version**: 1.11
 - **Compiler compatibility**: GCC 13+, Clang 15+
 - **Memory checking**: Valgrind on Linux (limited)
 

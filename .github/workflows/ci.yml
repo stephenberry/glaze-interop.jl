@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-13]
-        julia-version: ['1.6']
+        os: [ubuntu-latest, macos-latest]
+        julia-version: ['1.11']
     
     env:
       JULIA_NUM_THREADS: 2
@@ -21,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Julia 1.6
+    - name: Set up Julia ${{ matrix.julia-version }}
       uses: julia-actions/setup-julia@v2
       with:
         version: ${{ matrix.julia-version }}
@@ -63,9 +63,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.julia
-        key: ${{ runner.os }}-julia-1.6-${{ hashFiles('**/Project.toml', '**/Manifest.toml') }}
+        key: ${{ runner.os }}-julia-${{ matrix.julia-version }}-${{ hashFiles('**/Project.toml', '**/Manifest.toml') }}
         restore-keys: |
-          ${{ runner.os }}-julia-1.6-
+          ${{ runner.os }}-julia-${{ matrix.julia-version }}-
     
     - name: Install Julia dependencies
       shell: bash
@@ -84,7 +84,7 @@ jobs:
       if: failure()
       uses: actions/upload-artifact@v4
       with:
-        name: test-logs-${{ matrix.os }}-julia-1.6
+        name: test-logs-${{ matrix.os }}-julia-${{ matrix.julia-version }}
         path: |
           test_output.log
           *.log
@@ -113,7 +113,7 @@ jobs:
     - name: Set up Julia
       uses: julia-actions/setup-julia@v2
       with:
-        version: '1.6'
+        version: '1.11'
     
     - name: Install system dependencies
       run: |
