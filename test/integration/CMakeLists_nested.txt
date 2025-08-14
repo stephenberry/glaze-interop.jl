@@ -1,0 +1,22 @@
+cmake_minimum_required(VERSION 3.14)
+project(test_nested)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Glaze headers are included via find_package
+
+# Add the shared library
+add_library(test_nested SHARED 
+    test_nested_structs.cpp
+)
+
+# Find Glaze
+find_package(glaze REQUIRED)
+target_link_libraries(test_nested glaze::glaze)
+
+# Set output properties
+set_target_properties(test_nested PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}
+)

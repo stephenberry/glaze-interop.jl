@@ -1,0 +1,26 @@
+CompileFlags:
+  Add:
+    - "-std=c++23"
+    - "-I/Users/stephenberry/Develop/repos/glaze-interop.jl/cpp_interface"
+    - "-I/Users/stephenberry/Develop/repos/glaze-interop.jl/cpp_interface/build/_deps/glaze-src/include"
+  Remove:
+    - "-W*"
+
+Diagnostics:
+  UnusedIncludes: None
+  MissingIncludes: None
+  Suppress:
+    - "std-not-in-namespace"
+    - "namespace-not-found"
+  ClangTidy:
+    Remove:
+      - "readability-identifier-naming"
+      - "cppcoreguidelines-avoid-magic-numbers"
+
+Index:
+  Background: Build
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes

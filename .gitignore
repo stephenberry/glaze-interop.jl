@@ -1,0 +1,64 @@
+# Build artifacts
+build/
+*.so
+*.dylib
+*.dll
+*.o
+*.obj
+*.a
+*.lib
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Julia specific
+Manifest.toml
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+deps/deps.jl
+deps/build.log
+deps/downloads/
+deps/usr/
+deps/src/
+
+# Documentation build
+docs/build/
+docs/site/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# OS specific
+Thumbs.db
+.directory
+
+# C++ specific
+compile_commands.json
+.cache/
+*.pch
+
+# CMake specific
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+CTestTestfile.cmake
+_deps/
+
+# Test artifacts
+test/build/
+examples/build/
+*.out
+*.exe
+
+# Python cache (if any Python scripts)
+__pycache__/
+*.pyc
