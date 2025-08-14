@@ -9,16 +9,22 @@
             @test isa(container, Glaze.CppStruct)
             
             # Test accessing variant members - handle case where member might not be found
+            # Use a simple check instead of nested try-catch to avoid broken test marking
+            simple_var = nothing
             try
                 simple_var = container.simple_var
-                @test isa(simple_var, Glaze.CppVariant)
             catch e
-                if occursin("Member simple_var not found", string(e))
-                    @test_skip "simple_var member not available - variant support may not be initialized"
-                    return
-                else
+                if !occursin("Member simple_var not found", string(e))
                     rethrow(e)
                 end
+            end
+            
+            if simple_var !== nothing
+                @test isa(simple_var, Glaze.CppVariant)
+            else
+                # Skip the entire test set if variant members aren't available
+                @test_skip "Variant members not available - initialization issue"
+                return
             end
             
             geometry_var = container.geometry_var  

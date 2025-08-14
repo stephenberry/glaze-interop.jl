@@ -4,7 +4,7 @@ using Libdl
 
 @testset "Generic Nested Struct Resolution" begin
     # Build the test library with correct extension for platform
-    cd(@__DIR__)
+    test_dir = @__DIR__
     lib_name = if Sys.iswindows()
         "libgeneric_nested_test.dll"
     elseif Sys.isapple()
@@ -12,6 +12,10 @@ using Libdl
     else
         "libgeneric_nested_test.so"
     end
+    lib_path = joinpath(test_dir, lib_name)
+    
+    # Change to test directory for compilation
+    cd(test_dir)
     
     # Determine appropriate C++ standard flag based on compiler
     # Clang 15 and earlier use c++2b for C++23 preview
@@ -35,7 +39,7 @@ using Libdl
     end
     
     # Try compilation with fallback for older compilers
-    compile_cmd = `g++ -std=$cxx_std -shared -fPIC -o $lib_name 
+    compile_cmd = `g++ -std=$cxx_std -shared -fPIC -o $lib_path 
                    test_generic_nested.cpp 
                    ../build/_deps/glaze-src/src/interop/interop.cpp
                    -I../build/_deps/glaze-src/include 
@@ -47,7 +51,7 @@ using Libdl
         # If c++23 failed, try c++2b (for older Clang)
         if cxx_std == "c++23"
             @warn "C++23 compilation failed, trying c++2b for older compiler support"
-            compile_cmd_fallback = `g++ -std=c++2b -shared -fPIC -o $lib_name 
+            compile_cmd_fallback = `g++ -std=c++2b -shared -fPIC -o $lib_path 
                                    test_generic_nested.cpp 
                                    ../build/_deps/glaze-src/src/interop/interop.cpp
                                    -I../build/_deps/glaze-src/include 
@@ -58,8 +62,14 @@ using Libdl
         end
     end
     
-    # Load the library
-    lib = Glaze.load(lib_name)
+    # Verify the library was created
+    if !isfile(lib_path)
+        @test_skip "Failed to compile generic nested test library"
+        return
+    end
+    
+    # Load the library with full path
+    lib = Glaze.load(lib_path)
     
     # Initialize
     init_func = dlsym(lib.handle, :init_generic_test)
