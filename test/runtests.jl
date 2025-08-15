@@ -74,6 +74,11 @@ global test_lib_for_all_types = lib
     # Include new tests for examples coverage
     include("test_complex_nested.jl")
     # Map types are not yet implemented in Glaze.jl (test_maps.jl)
+    
+    # Run ABI diagnostic tests before iteration performance tests
+    # This helps identify any memory/ABI issues early
+    include("test_abi_diagnostics.jl")
+    
     include("test_iteration_performance.jl")
     
     # Run generic nested struct tests separately as they need their own build
