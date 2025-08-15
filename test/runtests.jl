@@ -79,6 +79,9 @@ global test_lib_for_all_types = lib
     # This helps identify any memory/ABI issues early
     include("test_abi_diagnostics.jl")
     
+    # Run focused corruption diagnostic
+    include("test_vector_corruption_diagnostic.jl")
+    
     include("test_iteration_performance.jl")
     
     # Run generic nested struct tests separately as they need their own build
