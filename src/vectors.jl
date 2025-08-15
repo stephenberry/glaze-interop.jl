@@ -1285,6 +1285,10 @@ function (func::CppMemberFunction)(args...)
                     c_val = Ref{UInt8}(UInt8(arg))
                     push!(arg_storage, c_val)
                     c_args[i] = Ptr{Cvoid}(pointer_from_objref(c_val))
+                elseif prim_desc.kind == 7 && isa(arg, Integer)  # UInt16
+                    c_val = Ref{UInt16}(UInt16(arg))
+                    push!(arg_storage, c_val)
+                    c_args[i] = Ptr{Cvoid}(pointer_from_objref(c_val))
                 elseif prim_desc.kind == 8 && isa(arg, Integer)  # UInt32
                     c_val = Ref{UInt32}(UInt32(arg))
                     push!(arg_storage, c_val)

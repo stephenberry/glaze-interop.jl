@@ -11,5 +11,8 @@
 #include "test_vector_member_functions.cpp"
 #include "test_variant_types.cpp"
 
+// Include the variant animals demo
+#include "variant_animals_demo.cpp"
+
 // Include the interop implementation
 #include "build/_deps/glaze-src/src/interop/interop.cpp"
