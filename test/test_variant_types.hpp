@@ -134,7 +134,8 @@ struct VariantContainer {
 };
 
 // Global test instances
-inline VariantContainer global_variant_container;
+// Use static inline to ensure proper initialization order
+static inline VariantContainer global_variant_container;
 
 // Glaze metadata for all structs
 template<>

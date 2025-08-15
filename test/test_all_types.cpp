@@ -1,7 +1,8 @@
 #include "test_all_types.hpp"
 
 // Global instances for testing with initial values
-TestIntegerTypes global_integer_test{
+// Use static to ensure proper initialization order
+static TestIntegerTypes global_integer_test{
     -128,    // i8_value
     -32768,  // i16_value  
     -2147483648, // i32_value
@@ -12,17 +13,17 @@ TestIntegerTypes global_integer_test{
     18446744073709551615ULL // u64_value
 };
 
-TestFloatTypes global_float_test{
+static TestFloatTypes global_float_test{
     3.14159f,    // f32_value
     2.71828      // f64_value
 };
 
-TestBasicTypes global_basic_test{
+static TestBasicTypes global_basic_test{
     true,                // bool_value
     "Hello, Glaze!"      // string_value
 };
 
-TestIntegerVectors global_int_vectors{
+static TestIntegerVectors global_int_vectors{
     {-128, -1, 0, 1, 127},         // vec_i8
     {-32768, -1, 0, 1, 32767},     // vec_i16
     {-100, -50, 0, 50, 100},        // vec_i32
@@ -33,7 +34,7 @@ TestIntegerVectors global_int_vectors{
     {0ULL, 1ULL, 1000000ULL, 18446744073709551614ULL} // vec_u64
 };
 
-TestFloatVectors global_float_vectors{
+static TestFloatVectors global_float_vectors{
     {-1.0f, 0.0f, 1.0f, 3.14f, 2.71f},    // vec_f32
     {-1.0, 0.0, 1.0, 3.14159, 2.71828},   // vec_f64
     {{1.0f, 0.0f}, {0.0f, 1.0f}, {-1.0f, 0.0f}}, // vec_complex_f32
