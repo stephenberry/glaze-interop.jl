@@ -142,12 +142,6 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 - Check for proper object lifetime management
 - Ensure proper initialization order
 
-### Platform Differences
-
-- **macOS**: May need Xcode command line tools
-- **Windows**: Requires Visual Studio 2022+ 
-- **Linux**: May need newer GCC/Clang packages
-
 ## Getting Help
 
 - **Issues**: [GitHub Issues](https://github.com/stephenberry/glaze-interop.jl/issues)
